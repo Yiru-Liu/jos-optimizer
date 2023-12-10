@@ -83,7 +83,8 @@ menuForm.addEventListener("submit", (event) => {
     console.log('Meal swipes:', numMealSwipes);
     console.log('Budget:', budget);
 
-    const purch_reccer = new PurchaseRecommender(selectedItems, budget);
+    const purch_reccer =
+        new PurchaseRecommender(Immutable.Set(selectedItems), budget);
     const report = purch_reccer.carts_report();
     console.log(report);
 });
