@@ -1,7 +1,50 @@
 "use strict";
 
-const centsToStr = (cents) => {
-    return "$" + (cents / 100).toFixed(2)
+class TableMaker {
+    elt;
+    max_now;
+    report;
+
+    /**
+     * Creates a TableMaker.
+     * @param {string} id the id of the table in the HTML
+     * @param {Array<Immutable.Record>} report table to display
+     * @param {number} max_now maximum number of rows to display
+     */
+    constructor(id, report, max_now) {
+        this.elt = document.getElementById(id);
+        this.report = report;
+        this.max_now = max_now;
+    }
+
+    make() {
+        const tbl_body = document.createElement("tbody");
+        for (let row_i = 0; row_i < this.max_now; row_i++) {
+            const current_row = this.report[row_i];
+            if (current_row === undefined) {
+                break;
+            }
+            const tbl_row = document.createElement("tr");
+            const cart_td = document.createElement("td");
+            cart_td.appendChild(document.createTextNode(
+                cart_to_str(current_row["cart"])));
+            const used_td = document.createElement("td");
+            used_td.appendChild(document.createTextNode(
+                centsToStr(current_row["used"])));
+            const remaining_td = document.createElement("td");
+            remaining_td.appendChild(document.createTextNode(
+                centsToStr(current_row["remaining"])));
+            const efficiency_td = document.createElement("td");
+            efficiency_td.appendChild(document.createTextNode(
+                current_row["efficiency"].toPrecision(3) + "%"));
+            tbl_row.appendChild(cart_td);
+            tbl_row.appendChild(used_td);
+            tbl_row.appendChild(remaining_td);
+            tbl_row.appendChild(efficiency_td);
+            tbl_body.appendChild(tbl_row);
+        }
+        this.elt.replaceChildren(tbl_body);
+    }
 }
 
 class ItemOption {
@@ -87,6 +130,9 @@ menuForm.addEventListener("submit", (event) => {
         new PurchaseRecommender(Immutable.Set(selectedItems), budget);
     const report = purch_reccer.carts_report();
     console.log(report);
+
+    const tableMaker = new TableMaker("results", report, Number.MAX_SAFE_INTEGER);
+    tableMaker.make();
 });
 
 document.addEventListener('DOMContentLoaded', function () {

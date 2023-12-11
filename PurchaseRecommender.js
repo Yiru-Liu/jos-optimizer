@@ -1,12 +1,31 @@
 "use strict";
 
+const RUN_TESTS = true;
+
+const test_suite = (name, tests, skip) => {
+    if (!skip) {
+        console.log("Running test suite " + name + "...");
+        tests();
+    }
+}
+
 const run_test = (message, condition) => {
     if (condition) {
-        console.log("TEST PASSED:", message);
+        console.log("✅ TEST PASSED:", message);
     } else {
-        console.log("TEST FAILED:", message);
+        console.log("❌ TEST FAILED:", message);
     }
 };
+
+/**
+ * Given an integer number of cents, returns a string representation of the
+ * amount in dollars.
+ * @param {number} cents An integer number of cents
+ * @returns {string}
+ */
+const centsToStr = (cents) => {
+    return "$" + (cents / 100).toFixed(2)
+}
 
 /**
  * A cart of items, where the key is the price and the value is the number.
@@ -21,7 +40,7 @@ const empty_cart = new Immutable.Map();
  * @returns {boolean} whether the cart is empty
  */
 const cart_is_empty = (cart) => {
-    return cart.size == 0;
+    return cart.size === 0;
 };
 
 /**
@@ -32,7 +51,7 @@ const cart_is_empty = (cart) => {
  */
 const cart_add = (cart, price) => {
     const current_num = cart.get(price);
-    if (current_num == undefined) {
+    if (current_num === undefined) {
         return cart.set(price, 1);
     } else {
         return cart.set(price, current_num + 1);
@@ -52,7 +71,32 @@ const cart_total = (cart) => {
     return total;
 }
 
-{ // Tests for cart operations
+/**
+ * Returns a human-readable string representation of the items in the cart.
+ * @param {Cart} cart
+ * @returns {string}
+ */
+const cart_to_str = (cart) => {
+    let answer = "";
+    const entries = Array.from(cart.entries());
+    entries.sort((a, b) => a[0] - b[0]);
+    for (const entry of entries) {
+        const price = entry[0];
+        const num = entry[1];
+        answer += num + " \u00d7 " + centsToStr(price) + "; ";
+    }
+    return answer.substring(0, answer.length - 2);
+}
+
+test_suite("for cart_to_str", () => {
+    run_test("String of cart with one item",
+        cart_to_str(Immutable.Map([[275, 1]])) === "1 \u00d7 $2.75");
+    run_test("String of cart with multiple items",
+        cart_to_str(Immutable.Map([[275, 1], [250, 3], [300, 2]])) ===
+        "3 \u00d7 $2.50; 1 \u00d7 $2.75; 2 \u00d7 $3.00");
+}, !RUN_TESTS);
+
+test_suite("for cart operations", () => {
     run_test("Empty cart has 0 value", cart_total(empty_cart) === 0);
     run_test("Empty cart is empty", cart_is_empty(empty_cart));
     const cart_with_1 = cart_add(empty_cart, 275);
@@ -65,7 +109,7 @@ const cart_total = (cart) => {
         !(cart_is_empty(cart_with_1) || cart_is_empty(cart_with_another)
             || cart_is_empty(cart_with_different))
     );
-}
+}, !RUN_TESTS);
 
 class TravelBag {
     seen_list;
@@ -157,7 +201,7 @@ class PurchaseRecommender {
         const all_filled_subcarts = (current_cart) => {
             if (!travel_bag.has_seen(current_cart)) {
                 const subcarts = this.next_purchases(current_cart);
-                if (subcarts.size == 0) {
+                if (subcarts.size === 0) {
                     travel_bag.collect(current_cart);
                 } else {
                     subcarts.forEach(subcart => all_filled_subcarts(subcart));
@@ -191,37 +235,37 @@ class PurchaseRecommender {
     }
 }
 
-{ // Tests for all_filled_carts
+test_suite("for all_filled_carts", () => {
     run_test("Only enough space for one",
         (new PurchaseRecommender(Immutable.Set([125]), 125))
-        .all_filled_carts().equals(Immutable.Set([
-            Immutable.Map([[125, 1]])
-        ]))
+            .all_filled_carts().equals(Immutable.Set([
+                Immutable.Map([[125, 1]])
+            ]))
     );
     run_test("Perfect space for two",
         (new PurchaseRecommender(Immutable.Set([125]), 250))
-        .all_filled_carts().equals(Immutable.Set([
-            Immutable.Map([[125, 2]])
-        ]))
+            .all_filled_carts().equals(Immutable.Set([
+                Immutable.Map([[125, 2]])
+            ]))
     );
     run_test("Space for two, with some space left over",
         (new PurchaseRecommender(Immutable.Set([100]), 250))
-        .all_filled_carts().equals(Immutable.Set([
-            Immutable.Map([[100, 2]])
-        ]))
+            .all_filled_carts().equals(Immutable.Set([
+                Immutable.Map([[100, 2]])
+            ]))
     );
     run_test("Multiple possibilities",
         (new PurchaseRecommender(Immutable.Set([100, 125, 150]), 250))
-        .all_filled_carts().equals(Immutable.Set([
-            Immutable.Map([[100, 2]]),
-            Immutable.Map([[100, 1], [125, 1]]),
-            Immutable.Map([[100, 1], [150, 1]]),
-            Immutable.Map([[125, 2]])
-        ]))
+            .all_filled_carts().equals(Immutable.Set([
+                Immutable.Map([[100, 2]]),
+                Immutable.Map([[100, 1], [125, 1]]),
+                Immutable.Map([[100, 1], [150, 1]]),
+                Immutable.Map([[125, 2]])
+            ]))
     );
-}
+}, !RUN_TESTS);
 
-{ // Tests for carts_report
+test_suite("for carts_report", () => {
     run_test("Report with only one",
         JSON.stringify(
             (new PurchaseRecommender(Immutable.Set([125]), 125)).carts_report()
@@ -267,4 +311,4 @@ class PurchaseRecommender {
             })
         ])
     )
-}
+}, !RUN_TESTS);
