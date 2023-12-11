@@ -9,12 +9,23 @@
     <script src="PurchaseRecommender.js"></script>
     <title>Jo's Items Optimizer</title>
     <style>
-        table,
-        th,
-        td {
+        body {
+            margin-left: 2em;
+            width: fit-content;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        form {
+            border: 2px solid black;
+            padding: 1em;
+        }
+
+        table, th, td {
+            margin-top: 1em;
             padding: 0.5rem;
             border: 1px solid black;
             border-collapse: collapse;
+            text-align: center;
         }
 
         label {
@@ -31,11 +42,17 @@
             opacity: 0.5;
             pointer-events: none;
         }
+
+        #error {
+            color: red;
+        }
     </style>
 </head>
 
 <body>
+    <h1>Jo's Combinatoric Optimizer</h1>
     <form id="menuForm"></form>
+    <span id="error"></span>
     <table id="results"></table>
     <script src="main.js"></script>
 </body>

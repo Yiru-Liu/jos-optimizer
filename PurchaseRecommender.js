@@ -24,7 +24,7 @@ const run_test = (message, condition) => {
  * @returns {string}
  */
 const centsToStr = (cents) => {
-    return "$" + (cents / 100).toFixed(2)
+    return "$" + (cents / 100).toFixed(2);
 }
 
 /**
@@ -83,9 +83,9 @@ const cart_to_str = (cart) => {
     for (const entry of entries) {
         const price = entry[0];
         const num = entry[1];
-        answer += num + " \u00d7 " + centsToStr(price) + "; ";
+        answer += num + " \u00d7 " + centsToStr(price) + "<br>";
     }
-    return answer.substring(0, answer.length - 2);
+    return answer.substring(0, answer.length - 4);
 }
 
 test_suite("for cart_to_str", () => {
@@ -93,7 +93,7 @@ test_suite("for cart_to_str", () => {
         cart_to_str(Immutable.Map([[275, 1]])) === "1 \u00d7 $2.75");
     run_test("String of cart with multiple items",
         cart_to_str(Immutable.Map([[275, 1], [250, 3], [300, 2]])) ===
-        "3 \u00d7 $2.50; 1 \u00d7 $2.75; 2 \u00d7 $3.00");
+        "3 \u00d7 $2.50; 1 \u00d7 $2.75<br>2 \u00d7 $3.00");
 }, !RUN_TESTS);
 
 test_suite("for cart operations", () => {
