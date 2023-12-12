@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
+        "noImplicitAny": true,
         "target": "ESNext",
-        "lib": ["DOM", "ESNext"]
-    }
+        "lib": ["DOM", "ESNext", "ESNext.Array"]
+    },
+    "exclude": ["./old_code"]
 }

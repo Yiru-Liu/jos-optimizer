@@ -1,4 +1,8 @@
-import { centsToStr, Recommender } from "./recommender";
+// import { centsToStr, Recommender } from "./recommender";
+
+function centsToStr(cents: number): string {
+  return "$" + (cents / 100).toFixed(2);
+}
 
 type ItemOption = [cost: number, description: string];
 
@@ -103,7 +107,7 @@ function menuProcessor(event: SubmitEvent): void {
   if (selectedItems.length === 0) {
     displayError("Please select at least one item.");
   } else {
-    const reccer = new Recommender(selectedItems, budget);
+    // const reccer = new Recommender(selectedItems, budget);
     // TODO: finish
   }
 }

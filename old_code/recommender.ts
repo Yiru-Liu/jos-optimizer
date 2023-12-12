@@ -1,5 +1,3 @@
-import runTestSuite from "./tester";
-
 export function centsToStr(cents: number): string {
   return "$" + (cents / 100).toFixed(2);
 }
@@ -90,18 +88,3 @@ export class Recommender {
     return travelBag.collected;
   }
 }
-
-runTestSuite("Cart operations", () => {
-  const testReccer = new Recommender([150, 275], 500);
-  const emptyCart = testReccer.emptyCart();
-  const cart1stGen = testReccer.cartNexts(emptyCart);
-  // const cart2ndGen = testReccer.cartNexts(cart1stGen[0]);
-  // const cart3rdGen = testReccer.cartNexts(cart2ndGen[1]);
-  return [
-    ["Empty cart is empty",
-      JSON.stringify(emptyCart) === "[[0,0],0]"],
-    ["All carts with 1 item",
-      JSON.stringify(cart1stGen) === "[[[1,0],150],[[0,1],275]]"]
-  ]
-  // TODO: More tests
-});
