@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 function runTestSuite(name, tests, skip) {
     if (!skip) {
-        console.log("Running test suite ".concat(name, "..."));
-        for (var _i = 0, tests_1 = tests; _i < tests_1.length; _i++) {
-            var test = tests_1[_i];
+        console.log("Running test suite \"".concat(name, "\":"));
+        for (var _i = 0, _a = tests(); _i < _a.length; _i++) {
+            var test = _a[_i];
             if (test[1]) {
                 console.log("✅ TEST PASSED:", test[0]);
             }
