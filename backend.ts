@@ -15,12 +15,18 @@ export class Recommender {
     }
     pricelist.forEach((price) => {
       if (price <= 0) {
-        throw new Error(`prices must all be positive (got ${price})`);
+        throw new Error(`prices must be positive (got ${price})`);
+      }
+      if (!Number.isInteger(price)) {
+        throw new Error(`prices must be integers (got ${price})`);
       }
     });
     minimums.forEach((min) => {
       if (min < 0) {
-        throw new Error(`minimums must all be non-negative (got ${min})`);
+        throw new Error(`minimums must be non-negative (got ${min})`);
+      }
+      if (!Number.isInteger(min)) {
+        throw new Error(`minimums must be integers (got ${min})`);
       }
     });
     if (budget <= 0) {
