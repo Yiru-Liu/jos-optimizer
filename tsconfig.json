@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
+        "skipLibCheck": true,
         "noImplicitAny": true,
-        "target": "ESNext",
-        "lib": ["DOM", "ESNext", "ESNext.Array"]
+        "lib": ["DOM", "ESNext"]
     },
-    "exclude": ["./old_code"]
+    "exclude": ["./old_code", "./node_modules"]
 }

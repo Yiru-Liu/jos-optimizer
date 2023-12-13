@@ -1,9 +1,5 @@
 // import { centsToStr, Recommender } from "./recommender";
 
-function centsToStr(cents: number): string {
-  return "$" + (cents / 100).toFixed(2);
-}
-
 type ItemOption = [cost: number, description: string];
 
 let menuForm: HTMLFormElement;

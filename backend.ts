@@ -1,10 +1,30 @@
 type Cart = number[];
+interface Report {
+  cart: Cart,
+  cartStr: string,
+  variety: number,
+  amountUsed: number,
+  amountRemaining: number,
+  efficiency: number
+}
+
+function variance(data: number[]): number {
+  const firstMoment = data.reduce((acc, elt) => acc + elt) / data.length;
+  const secondMoment
+    = data.map(x => x * x).reduce((acc, elt) => acc + elt) / data.length;
+  return secondMoment - (firstMoment * firstMoment);
+}
+
+function centsToStr(cents: number): string {
+  return "$" + (cents / 100).toFixed(2);
+}
 
 export class Recommender {
   pricelist: number[];
   minimums: number[];
   budget: number;
-  filledCarts: Cart[];
+  allFilledCarts: Cart[];
+  allReports: Report[];
 
   constructor(pricelist: number[], minimums: Cart, budget: number) {
     if (pricelist.length === 0) {
@@ -36,16 +56,33 @@ export class Recommender {
     this.pricelist = pricelist.toSorted((a, b) => a - b);
     this.minimums = minimums;
     this.budget = budget;
-    this.filledCarts = [];
+    this.allFilledCarts = [];
 
-    if (this.fitsBudget(minimums)) {
-      let currentCart = this.maxCheapest(minimums);
-      while (currentCart) {
-        this.filledCarts.push(currentCart);
-        currentCart = this.nextPermute(currentCart, 1);
-        currentCart = this.maxCheapest(currentCart);
+    if (this.fitsBudget(this.minimums)) {
+      let currentCart = this.maxCheapest(this.minimums);
+      while (true) {
+        this.allFilledCarts.push(currentCart);
+        const nextCart = this.nextPermute(currentCart, 0);
+        if (!nextCart) {
+          break;
+        }
+        currentCart = this.maxCheapest(nextCart);
       }
     }
+
+    this.allReports = this.allFilledCarts.map(ct => {
+      const total = this.cartTotal(ct);
+      return {
+        cart: ct,
+        cartStr: this.cartToStr(ct),
+        variety: 1 / variance(ct),
+        amountUsed: total,
+        amountRemaining: this.budget - total,
+        efficiency: total / this.budget
+      }
+    });
+
+    Object.freeze(this);
   }
 
   cartTotal(ct: Cart): number {
@@ -78,11 +115,17 @@ export class Recommender {
     newCart[index]++;
     if (this.fitsBudget(newCart)) {
       return newCart;
-    } else if ((index + 1) === this.minimums.length) {
+    } else if ((index + 1) >= this.minimums.length) {
       return null;
     } else {
       newCart[index] = this.minimums[index];
       return this.nextPermute(newCart, index + 1);
     }
+  }
+
+  cartToStr(ct: Cart): string {
+    return ct.map((quantity, i) =>
+      `${quantity} \u00d7 ${centsToStr(this.pricelist[i])}`
+    ).join("<br>")
   }
 }
