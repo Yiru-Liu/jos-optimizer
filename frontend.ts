@@ -1,4 +1,4 @@
-import { centsToStr, Recommender } from "./backend";
+import { centsToStr, Recommender } from "./backend.js";
 
 type ItemOption = [cost: number, description: string];
 type TableRow = [desc: string, amountUsed: string, amountRemaining: string,
@@ -16,10 +16,19 @@ const menu: ItemOption[] = [
 
 let menuForm: HTMLFormElement;
 let errorElt: HTMLSpanElement;
+let messageElt: HTMLSpanElement;
 let resultsTable: HTMLTableElement;
 
+function displayMessage(msg: string): void {
+  messageElt.replaceChildren(document.createTextNode(msg));
+}
+
+function clearMessage(): void {
+  messageElt.innerHTML = "";
+}
+
 function displayError(msg: string): void {
-  errorElt.innerHTML = msg;
+  errorElt.replaceChildren(document.createTextNode(msg));
 }
 
 function clearError(): void {
@@ -43,6 +52,8 @@ function updateTable(rows: TableRow[]): void {
   header_row.appendChild(used_th);
   header_row.appendChild(rem_th);
   header_row.appendChild(efficiency_th);
+
+  tbl_body.appendChild(header_row);
 
   rows.forEach((row) => {
     const tbl_row = document.createElement("tr");
@@ -92,7 +103,7 @@ function loadMenu(menu: Array<ItemOption>,
     input.type = "number";
     input.name = itemOption[0].toString();
     input.min = "0";
-    input.value = "1";
+    input.value = "0";
     checkbox.addEventListener("change", function () {
       if (this.checked) {
         enableInput(input);
@@ -136,6 +147,7 @@ function loadMenu(menu: Array<ItemOption>,
 function menuProcessor(event: SubmitEvent): void {
   event.preventDefault();
   clearError();
+  clearMessage();
   resultsTable.innerHTML = "";
 
   const formData = new FormData(menuForm);
@@ -166,6 +178,7 @@ function menuProcessor(event: SubmitEvent): void {
 
       return [desc, used, rem, eff];
     });
+    displayMessage(`${tableRows.length} option${(tableRows.length === 1) ? "" : "s"} found:`);
     updateTable(tableRows);
   }
 }
@@ -173,6 +186,7 @@ function menuProcessor(event: SubmitEvent): void {
 document.addEventListener("DOMContentLoaded", function () {
   menuForm = <HTMLFormElement>document.getElementById("menuForm");
   errorElt = <HTMLSpanElement>document.getElementById("error");
+  messageElt = <HTMLSpanElement>document.getElementById("message");
   resultsTable = <HTMLTableElement>document.getElementById("results");
   loadMenu(menu, menuProcessor);
 });

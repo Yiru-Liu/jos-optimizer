@@ -2,6 +2,7 @@
     "compilerOptions": {
         "skipLibCheck": true,
         "noImplicitAny": true,
+        "target": "ESNext",
         "lib": ["DOM", "ESNext"]
     },
     "exclude": ["./old_code", "./node_modules"]
