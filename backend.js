@@ -59,7 +59,7 @@ export class Recommender {
                 currentCart = this.maxCheapest(nextCart);
             }
         }
-        this.allReports = this.allFilledCarts.toReversed().map(ct => {
+        this.allReports = this.allFilledCarts.map(ct => {
             const total = this.cartTotal(ct);
             return {
                 cart: ct,
