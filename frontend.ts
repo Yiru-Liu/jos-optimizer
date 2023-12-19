@@ -90,7 +90,43 @@ function enableInput(input: HTMLInputElement): void {
 
 function loadMenu(menu: Array<ItemOption>,
   submissionProcessor: (event: SubmitEvent) => void): void {
-  menuForm.replaceChildren(...menu.map((itemOption) => {
+  // const menuSelectorFieldset = document.createElement("fieldset");
+  // const menuSelectorLegend = document.createElement("legend");
+  // menuSelectorLegend.appendChild(document.createTextNode("Item Options"));
+  // menuSelectorFieldset.appendChild(menuSelectorLegend);
+
+  // const josItemsDiv = document.createElement("div");
+  // const josItemsInput = document.createElement("input");
+  // josItemsInput.type = "radio";
+  // josItemsInput.id = "josItems";
+  // josItemsInput.name = "menuSelector";
+  // josItemsInput.value = "josItems";
+  // josItemsInput.checked = true;
+  // const josItemsLabel = document.createElement("label");
+  // josItemsLabel.setAttribute("for", "josItems");
+  // josItemsLabel.appendChild(document.createTextNode("Jo's Items"));
+  // josItemsDiv.append(josItemsInput, josItemsLabel);
+
+  // const customItemsDiv = document.createElement("div");
+  // const customItemsInput = document.createElement("input");
+  // customItemsInput.type = "radio";
+  // customItemsInput.id = "customItems";
+  // customItemsInput.name = "menuSelector";
+  // customItemsInput.value = "customItems";
+  // const customItemsLabel = document.createElement("label");
+  // customItemsLabel.setAttribute("for", "customItems");
+  // customItemsLabel.appendChild(document.createTextNode("Custom Items"));
+  // customItemsDiv.append(customItemsInput, customItemsLabel);
+
+  // menuSelectorFieldset.append(josItemsDiv, customItemsDiv);
+  // menuForm.appendChild(menuSelectorFieldset);
+
+  const itemsFieldset = document.createElement("fieldset");
+  const itemsLegend = document.createElement("legend");
+  itemsLegend.appendChild(document.createTextNode("Jo's Items"));
+  itemsFieldset.appendChild(itemsLegend);
+
+  itemsFieldset.append(...menu.map((itemOption) => {
     const label = document.createElement("label");
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -138,7 +174,8 @@ function loadMenu(menu: Array<ItemOption>,
   submitButton.type = "submit";
   submitButton.value = "Calculate";
 
-  menuForm.appendChild(mealSwipesLabel);
+  itemsFieldset.appendChild(mealSwipesLabel);
+  menuForm.appendChild(itemsFieldset);
   menuForm.appendChild(submitButton);
 
   menuForm.addEventListener("submit", submissionProcessor);
