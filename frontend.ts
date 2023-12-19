@@ -1,6 +1,16 @@
-// import { centsToStr, Recommender } from "./recommender";
+import { centsToStr, Recommender } from "./backend";
 
 type ItemOption = [cost: number, description: string];
+
+const menu: ItemOption[] = [
+  [150, "hand fruit"],
+  [250, "cereal, chips, pop tarts, rice crispy treats, milk"],
+  [275, "oatmeal, powerade, sparkling water"],
+  [300, "hostess, uncrustables"],
+  [325, "juice"],
+  [350, "yogurt packs, tea (gold peak, honest, and peace), vitamin water"],
+  [425, "fruit salad"]
+];
 
 let menuForm: HTMLFormElement;
 let errorElt: HTMLSpanElement;

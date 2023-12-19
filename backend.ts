@@ -1,21 +1,18 @@
 type Cart = number[];
-interface Report {
+type Report = {
   cart: Cart,
-  cartStr: string,
-  variety: number,
-  amountUsed: number,
-  amountRemaining: number,
   efficiency: number
 }
 
-function variance(data: number[]): number {
-  const firstMoment = data.reduce((acc, elt) => acc + elt) / data.length;
-  const secondMoment
-    = data.map(x => x * x).reduce((acc, elt) => acc + elt) / data.length;
-  return secondMoment - (firstMoment * firstMoment);
+function sum(data: number[]): number {
+  return data.reduce((a, b) => a + b, 0);
 }
 
-function centsToStr(cents: number): string {
+function dotProduct(vec1: number[], vec2: number[]): number {
+  return sum(vec1.map((n, i) => n * vec2[i]));
+}
+
+export function centsToStr(cents: number): string {
   return "$" + (cents / 100).toFixed(2);
 }
 
@@ -53,7 +50,13 @@ export class Recommender {
       throw new Error(`budget must be positive (got ${budget})`);
     }
 
-    this.pricelist = pricelist.toSorted((a, b) => a - b);
+    for (let i = 0; i < pricelist.length - 1; i++) {
+      if (pricelist[i + 1] <= pricelist[i]) {
+        throw new Error("Pricelist not sorted in ascending order");
+      }
+    }
+
+    this.pricelist = pricelist;
     this.minimums = minimums;
     this.budget = budget;
     this.allFilledCarts = [];
@@ -70,25 +73,19 @@ export class Recommender {
       }
     }
 
-    this.allReports = this.allFilledCarts.map(ct => {
+    this.allReports = this.allFilledCarts.toReversed().map(ct => {
       const total = this.cartTotal(ct);
       return {
         cart: ct,
-        cartStr: this.cartToStr(ct),
-        variety: 1 / variance(ct),
-        amountUsed: total,
-        amountRemaining: this.budget - total,
-        efficiency: total / this.budget
+        efficiency: 100 * total / this.budget
       }
-    });
+    }).sort((a, b) => b.efficiency - a.efficiency);
 
     Object.freeze(this);
   }
 
   cartTotal(ct: Cart): number {
-    let total = 0;
-    ct.forEach((quantity, i) => total += quantity * this.pricelist[i]);
-    return total;
+    return dotProduct(ct, this.pricelist);
   }
 
   fitsBudget(ct: Cart): boolean {
@@ -96,6 +93,9 @@ export class Recommender {
   }
 
   maxCheapest(ct: Cart): Cart {
+    if (!this.fitsBudget(ct)) {
+      throw new Error(`Cart already exceeds budget: ${ct}`);
+    }
     if (ct[0] !== this.minimums[0]) {
       throw new Error(`Cart does not have minimum of cheapest (expected ${this.minimums[0]}, got ${ct[0]})`);
     }
@@ -103,7 +103,7 @@ export class Recommender {
     const currentTotal = this.cartTotal(newCart);
     const budgetRemaining = this.budget - currentTotal;
     const numCheapestCanFit = Math.floor(budgetRemaining / this.pricelist[0]);
-    newCart[0] = numCheapestCanFit;
+    newCart[0] += numCheapestCanFit;
     return newCart;
   }
 
@@ -126,6 +126,6 @@ export class Recommender {
   cartToStr(ct: Cart): string {
     return ct.map((quantity, i) =>
       `${quantity} \u00d7 ${centsToStr(this.pricelist[i])}`
-    ).join("<br>")
+    ).join("<br>");
   }
 }
