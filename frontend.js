@@ -8,10 +8,22 @@ const menu = [
     [350, "yogurt packs, tea (gold peak, honest, and peace), vitamin water"],
     [425, "fruit salad"]
 ];
+let mainElt;
 let menuForm;
 let errorElt;
 let messageElt;
 let resultsTable;
+function sizeMain() {
+    const availableWidth = document.documentElement.clientWidth;
+    if (availableWidth < 500) {
+        mainElt.style.width = "484px";
+        mainElt.style.transform = `scale(${availableWidth / 500})`;
+        console.log(availableWidth / 500);
+    }
+    else {
+        mainElt.removeAttribute("style");
+    }
+}
 function displayMessage(msg) {
     messageElt.replaceChildren(document.createTextNode(msg));
 }
@@ -179,9 +191,12 @@ function menuProcessor(event) {
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
+    mainElt = document.getElementsByTagName("main")[0];
     menuForm = document.getElementById("menuForm");
     errorElt = document.getElementById("error");
     messageElt = document.getElementById("message");
     resultsTable = document.getElementById("results");
+    sizeMain();
+    window.addEventListener("resize", sizeMain);
     loadMenu(menu, menuProcessor);
 });

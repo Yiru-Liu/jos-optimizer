@@ -14,10 +14,22 @@ const menu: ItemOption[] = [
   [425, "fruit salad"]
 ];
 
+let mainElt: HTMLElement;
 let menuForm: HTMLFormElement;
 let errorElt: HTMLSpanElement;
 let messageElt: HTMLSpanElement;
 let resultsTable: HTMLTableElement;
+
+function sizeMain(): void {
+  const availableWidth = document.documentElement.clientWidth;
+  if (availableWidth < 500) {
+    mainElt.style.width = "484px";
+    mainElt.style.transform = `scale(${availableWidth / 500})`;
+    console.log(availableWidth / 500);
+  } else {
+    mainElt.removeAttribute("style");
+  }
+}
 
 function displayMessage(msg: string): void {
   messageElt.replaceChildren(document.createTextNode(msg));
@@ -221,9 +233,12 @@ function menuProcessor(event: SubmitEvent): void {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  mainElt = document.getElementsByTagName("main")[0];
   menuForm = <HTMLFormElement>document.getElementById("menuForm");
   errorElt = <HTMLSpanElement>document.getElementById("error");
   messageElt = <HTMLSpanElement>document.getElementById("message");
   resultsTable = <HTMLTableElement>document.getElementById("results");
+  sizeMain();
+  window.addEventListener("resize", sizeMain);
   loadMenu(menu, menuProcessor);
 });
