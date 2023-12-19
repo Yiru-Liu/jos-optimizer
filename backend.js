@@ -106,6 +106,6 @@ export class Recommender {
         }
     }
     cartToStr(ct) {
-        return ct.map((quantity, i) => `${quantity} \u00d7 ${centsToStr(this.pricelist[i])}`).join("<br>");
+        return ct.map((quantity, i) => `${quantity} \u00d7 ${centsToStr(this.pricelist[i])}`).reverse().join("<br>");
     }
 }

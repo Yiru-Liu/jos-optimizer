@@ -126,6 +126,6 @@ export class Recommender {
   cartToStr(ct: Cart): string {
     return ct.map((quantity, i) =>
       `${quantity} \u00d7 ${centsToStr(this.pricelist[i])}`
-    ).join("<br>");
+    ).reverse().join("<br>");
   }
 }
