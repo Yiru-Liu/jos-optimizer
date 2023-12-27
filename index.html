@@ -8,6 +8,20 @@
     <script src="frontend.js" type="module"></script>
     <title>Jo's Items Optimizer</title>
     <style>
+        @media (prefers-color-scheme: light) {
+            body {
+                background-color: white;
+                color: black;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: black;
+                color: white;
+            }
+        }
+
         main {
             margin: auto;
             width: fit-content;
@@ -41,7 +55,7 @@
         td {
             margin: 1em auto;
             padding: 0.5rem;
-            border: 1px solid black;
+            border: 1px solid;
             border-collapse: collapse;
             text-align: center;
         }
