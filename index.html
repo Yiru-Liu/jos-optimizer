@@ -46,7 +46,7 @@
         }
 
         form {
-            border: 2px solid black;
+            border: 2px solid;
             padding: 1em;
         }
 
@@ -65,9 +65,17 @@
             margin-bottom: 10px;
         }
 
-        input[type="number"] {
+        input[type="number"]:not(.currencyInput) {
             width: 3em;
             text-align: right;
+        }
+
+        input:invalid {
+            background-color: pink;
+        }
+
+        .currencyInput {
+            width: 6em;
         }
 
         .disabled-input {

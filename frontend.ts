@@ -4,7 +4,7 @@ type ItemOption = [cost: number, description: string];
 type TableRow = [desc: string, amountUsed: string, amountRemaining: string,
   efficiency: string];
 
-const menu: ItemOption[] = [
+const JOS_MENU: ItemOption[] = [
   [150, "hand fruit"],
   [250, "cereal, chips, pop tarts, rice crispy treats, milk"],
   [275, "oatmeal, powerade, sparkling water"],
@@ -28,6 +28,7 @@ function sizeMain(): void {
     console.log(availableWidth / 500);
   } else {
     mainElt.removeAttribute("style");
+    mainElt.style.minWidth = "484px";
   }
 }
 
@@ -48,46 +49,50 @@ function clearError(): void {
 }
 
 function updateTable(rows: TableRow[]): void {
-  const tbl_body = document.createElement("tbody");
-  const header_row = document.createElement("tr");
+  const tblBody = document.createElement("tbody");
+  const headerRow = document.createElement("tr");
 
-  const desc_th = document.createElement("th");
-  desc_th.appendChild(document.createTextNode("Items"));
-  const used_th = document.createElement("th");
-  used_th.appendChild(document.createTextNode("Amount used"));
-  const rem_th = document.createElement("th");
-  rem_th.appendChild(document.createTextNode("Amount wasted"));
-  const efficiency_th = document.createElement("th");
-  efficiency_th.appendChild(document.createTextNode("Efficiency"));
+  const descTh = document.createElement("th");
+  descTh.appendChild(document.createTextNode("Items"));
+  const usedTh = document.createElement("th");
+  usedTh.appendChild(document.createTextNode("Amount used"));
+  const remTh = document.createElement("th");
+  remTh.appendChild(document.createTextNode("Amount wasted"));
+  const efficiencyTh = document.createElement("th");
+  efficiencyTh.appendChild(document.createTextNode("Efficiency"));
 
-  header_row.appendChild(desc_th);
-  header_row.appendChild(used_th);
-  header_row.appendChild(rem_th);
-  header_row.appendChild(efficiency_th);
+  headerRow.appendChild(descTh);
+  headerRow.appendChild(usedTh);
+  headerRow.appendChild(remTh);
+  headerRow.appendChild(efficiencyTh);
 
-  tbl_body.appendChild(header_row);
+  tblBody.appendChild(headerRow);
 
   rows.forEach((row) => {
-    const tbl_row = document.createElement("tr");
+    const tblRow = document.createElement("tr");
 
-    const desc_td = document.createElement("td");
-    desc_td.innerHTML = row[0];
-    const used_td = document.createElement("td");
-    used_td.appendChild(document.createTextNode(row[1]));
-    const rem_td = document.createElement("td");
-    rem_td.appendChild(document.createTextNode(row[2]));
-    const efficiency_td = document.createElement("td");
-    efficiency_td.appendChild(document.createTextNode(row[3]));
+    const descTd = document.createElement("td");
+    descTd.innerHTML = row[0];
+    const usedTd = document.createElement("td");
+    usedTd.appendChild(document.createTextNode(row[1]));
+    const remTd = document.createElement("td");
+    remTd.appendChild(document.createTextNode(row[2]));
+    const efficiencyTd = document.createElement("td");
+    efficiencyTd.appendChild(document.createTextNode(row[3]));
 
-    tbl_row.appendChild(desc_td);
-    tbl_row.appendChild(used_td);
-    tbl_row.appendChild(rem_td);
-    tbl_row.appendChild(efficiency_td);
+    tblRow.appendChild(descTd);
+    tblRow.appendChild(usedTd);
+    tblRow.appendChild(remTd);
+    tblRow.appendChild(efficiencyTd);
 
-    tbl_body.appendChild(tbl_row);
+    tblBody.appendChild(tblRow);
   });
 
-  resultsTable.replaceChildren(tbl_body);
+  resultsTable.replaceChildren(tblBody);
+}
+
+function clearTable(): void {
+  resultsTable.innerHTML = "";
 }
 
 function disableInput(input: HTMLInputElement): void {
@@ -100,45 +105,11 @@ function enableInput(input: HTMLInputElement): void {
   input.removeAttribute("disabled");
 }
 
-function loadMenu(menu: Array<ItemOption>,
-  submissionProcessor: (event: SubmitEvent) => void): void {
-  // const menuSelectorFieldset = document.createElement("fieldset");
-  // const menuSelectorLegend = document.createElement("legend");
-  // menuSelectorLegend.appendChild(document.createTextNode("Item Options"));
-  // menuSelectorFieldset.appendChild(menuSelectorLegend);
-
-  // const josItemsDiv = document.createElement("div");
-  // const josItemsInput = document.createElement("input");
-  // josItemsInput.type = "radio";
-  // josItemsInput.id = "josItems";
-  // josItemsInput.name = "menuSelector";
-  // josItemsInput.value = "josItems";
-  // josItemsInput.checked = true;
-  // const josItemsLabel = document.createElement("label");
-  // josItemsLabel.setAttribute("for", "josItems");
-  // josItemsLabel.appendChild(document.createTextNode("Jo's Items"));
-  // josItemsDiv.append(josItemsInput, josItemsLabel);
-
-  // const customItemsDiv = document.createElement("div");
-  // const customItemsInput = document.createElement("input");
-  // customItemsInput.type = "radio";
-  // customItemsInput.id = "customItems";
-  // customItemsInput.name = "menuSelector";
-  // customItemsInput.value = "customItems";
-  // const customItemsLabel = document.createElement("label");
-  // customItemsLabel.setAttribute("for", "customItems");
-  // customItemsLabel.appendChild(document.createTextNode("Custom Items"));
-  // customItemsDiv.append(customItemsInput, customItemsLabel);
-
-  // menuSelectorFieldset.append(josItemsDiv, customItemsDiv);
-  // menuForm.appendChild(menuSelectorFieldset);
-
-  const itemsFieldset = document.createElement("fieldset");
+function displayJosMenu(fieldset: HTMLFieldSetElement): void {
   const itemsLegend = document.createElement("legend");
   itemsLegend.appendChild(document.createTextNode("Jo's Items"));
-  itemsFieldset.appendChild(itemsLegend);
 
-  itemsFieldset.append(...menu.map((itemOption) => {
+  const itemSelections = JOS_MENU.map((itemOption) => {
     const label = document.createElement("label");
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -152,6 +123,7 @@ function loadMenu(menu: Array<ItemOption>,
     input.name = itemOption[0].toString();
     input.min = "0";
     input.value = "0";
+    input.required = true;
     checkbox.addEventListener("change", function () {
       if (this.checked) {
         enableInput(input);
@@ -167,7 +139,7 @@ function loadMenu(menu: Array<ItemOption>,
     label.appendChild(document.createTextNode("Minimum: "));
     label.appendChild(input);
     return label;
-  }));
+  });
 
   const mealSwipesLabel = document.createElement("label");
   mealSwipesLabel.appendChild(document.createTextNode(
@@ -182,11 +154,129 @@ function loadMenu(menu: Array<ItemOption>,
   mealSwipesNum.value = "1";
   mealSwipesLabel.appendChild(mealSwipesNum);
 
+  fieldset.replaceChildren(itemsLegend, ...itemSelections, mealSwipesLabel);
+}
+
+function createCurrencyInput(name: string): HTMLInputElement {
+  const currencyInput = document.createElement("input");
+  currencyInput.type = "number";
+  currencyInput.name = name;
+  currencyInput.classList.add("currencyInput");
+  currencyInput.min = "0.01";
+  currencyInput.step = "0.01";
+  currencyInput.required = true;
+  currencyInput.placeholder = "1234.56";
+  return currencyInput;
+}
+
+function displayCustomMenuEditor(fieldset: HTMLFieldSetElement): void {
+  const itemsLegend = document.createElement("legend");
+  itemsLegend.appendChild(document.createTextNode("Custom Items"));
+
+  const priceCategoriesLabel = document.createElement("label");
+  priceCategoriesLabel.appendChild(document.createTextNode("Price categories:"));
+
+  const addNewPriceButton = document.createElement("input");
+  addNewPriceButton.type = "button";
+  addNewPriceButton.value = "Add new price category";
+  addNewPriceButton.style.display = "block";
+
+  priceCategoriesLabel.appendChild(addNewPriceButton);
+
+  const budgetLabel = document.createElement("label");
+  const budgetInput = createCurrencyInput("budget");
+  budgetLabel.replaceChildren(document.createTextNode("Budget: $"),
+    budgetInput);
+
+  fieldset.replaceChildren(itemsLegend, priceCategoriesLabel, budgetLabel);
+
+  function addNewPriceCategory(): void {
+    const priceCategoryDiv = document.createElement("div");
+    priceCategoryDiv.classList.add("priceCategory");
+
+    const priceInput = createCurrencyInput("price");
+
+    const minInput = document.createElement("input");
+    minInput.type = "number";
+    minInput.name = "minQuantity";
+    minInput.min = "0";
+    minInput.value = "0";
+    minInput.required = true;
+
+    const removeButton = document.createElement("input");
+    removeButton.type = "button";
+    removeButton.value = "Remove";
+    removeButton.style.float = "right";
+    removeButton.addEventListener("click", () => {
+      priceCategoryDiv.remove();
+    });
+
+    priceCategoryDiv.replaceChildren(document.createTextNode("$"), priceInput,
+      document.createTextNode("\u2003Minimum: "), minInput, removeButton);
+    priceCategoriesLabel.insertBefore(priceCategoryDiv, addNewPriceButton);
+  }
+
+  addNewPriceButton.addEventListener("click", addNewPriceCategory);
+}
+
+function loadMenu(submissionProcessor: (event: SubmitEvent) => void): void {
+  const menuSelectorFieldset = document.createElement("fieldset");
+  const menuSelectorLegend = document.createElement("legend");
+  menuSelectorLegend.appendChild(document.createTextNode("Item Options"));
+  menuSelectorFieldset.appendChild(menuSelectorLegend);
+
+  const josItemsDiv = document.createElement("div");
+  const josItemsInput = document.createElement("input");
+  josItemsInput.type = "radio";
+  josItemsInput.id = "josItems";
+  josItemsInput.name = "menuSelector";
+  josItemsInput.value = "josItems";
+  josItemsInput.checked = true;
+  const josItemsLabel = document.createElement("label");
+  josItemsLabel.setAttribute("for", "josItems");
+  josItemsLabel.appendChild(document.createTextNode("Jo's Items"));
+  josItemsDiv.append(josItemsInput, josItemsLabel);
+
+  const customItemsDiv = document.createElement("div");
+  const customItemsInput = document.createElement("input");
+  customItemsInput.type = "radio";
+  customItemsInput.id = "customItems";
+  customItemsInput.name = "menuSelector";
+  customItemsInput.value = "customItems";
+  const customItemsLabel = document.createElement("label");
+  customItemsLabel.setAttribute("for", "customItems");
+  customItemsLabel.appendChild(document.createTextNode("Custom Items"));
+  customItemsDiv.append(customItemsInput, customItemsLabel);
+
+  menuSelectorFieldset.append(josItemsDiv, customItemsDiv);
+  menuForm.appendChild(menuSelectorFieldset);
+
+  const itemsFieldset = document.createElement("fieldset");
+
+  josItemsInput.addEventListener("change", function () {
+    if (this.checked) {
+      clearError();
+      clearMessage();
+      clearTable();
+      displayJosMenu(itemsFieldset);
+    }
+  });
+
+  displayJosMenu(itemsFieldset);
+
+  customItemsInput.addEventListener("change", function () {
+    if (this.checked) {
+      clearError();
+      clearMessage();
+      clearTable();
+      displayCustomMenuEditor(itemsFieldset);
+    }
+  });
+
   const submitButton = document.createElement("input");
   submitButton.type = "submit";
   submitButton.value = "Calculate";
 
-  itemsFieldset.appendChild(mealSwipesLabel);
   menuForm.appendChild(itemsFieldset);
   menuForm.appendChild(submitButton);
 
@@ -197,39 +287,76 @@ function menuProcessor(event: SubmitEvent): void {
   event.preventDefault();
   clearError();
   clearMessage();
-  resultsTable.innerHTML = "";
+  clearTable();
+
+  let prices: number[];
+  let minimums: number[];
+  let budget: number;
 
   const formData = new FormData(menuForm);
-  const selectedItems: Array<number> = [];
-  const quantities: Array<number> = [];
-  formData.getAll("item").forEach((item) => {
-    selectedItems.push(parseInt(item as string));
-    quantities.push(parseInt(formData.get(item as string) as string));
-  });
-
-  const numMealSwipes = formData.get("numMealSwipes") as string;
-  const budget = parseInt(numMealSwipes) * 1125;
-  console.log('Selected Items:', selectedItems);
-  console.log('Quantities:', quantities);
-  console.log('Meal swipes:', numMealSwipes);
-  console.log('Budget:', budget);
-
-  if (selectedItems.length === 0) {
-    displayError("Please select at least one item.");
-  } else {
-    const reccer = new Recommender(selectedItems, quantities, budget);
-    const tableRows = reccer.allReports.map((reportItem): TableRow => {
-      const desc = reccer.cartToStr(reportItem.cart);
-      const total = reccer.cartTotal(reportItem.cart)
-      const used = centsToStr(total);
-      const rem = centsToStr(reccer.budget - total);
-      const eff = reportItem.efficiency.toPrecision(3) + "%";
-
-      return [desc, used, rem, eff];
+  const currentForm = formData.get("menuSelector");
+  if (currentForm === "josItems") {
+    console.log("Jo's Items form used.");
+    prices = [];
+    minimums = [];
+    formData.getAll("item").forEach((item) => {
+      prices.push(parseInt(item as string));
+      minimums.push(parseInt(formData.get(item as string) as string));
     });
-    displayMessage(`${tableRows.length} option${(tableRows.length === 1) ? "" : "s"} found:`);
-    updateTable(tableRows);
+
+    const numMealSwipes = formData.get("numMealSwipes") as string;
+    budget = parseInt(numMealSwipes) * 1125;
+
+    if (prices.length === 0) {
+      displayError("Please select at least one item.");
+      return;
+    }
+  } else if (currentForm === "customItems") {
+    console.log("Custom items form used.");
+    const pricesRaw = formData.getAll("price") as string[];
+    if (pricesRaw.length === 0) {
+      displayError("Please add at least one price category.");
+      return;
+    }
+    prices = pricesRaw.map(p => Math.round(parseFloat(p) * 100));
+    minimums = formData.getAll("minQuantity").map(m => parseInt(m as string));
+
+    prices.map((p, i) => [p, minimums[i]]).sort((a, b) => a[0] - b[0])
+      .forEach((pair, i) => {
+        prices[i] = pair[0];
+        minimums[i] = pair[1];
+      });
+
+    budget = Math.round(parseFloat(formData.get("budget") as string) * 100);
+  } else {
+    throw new Error("Invalid form selected");
   }
+
+  console.log("prices: ", prices);
+  console.log("minimums: ", minimums);
+  console.log("budget: ", budget);
+
+  calcAndDisplayRecs(prices, minimums, budget);
+}
+
+function xNoun(quantity: number, noun: string): string {
+  return `${quantity} ${noun}${(quantity === 1) ? "" : "s"}`;
+}
+
+function calcAndDisplayRecs(priceCategories: number[], mins: number[],
+  budget: number): void {
+  const reccer = new Recommender(priceCategories, mins, budget);
+  const tableRows = reccer.allReports.map((reportItem): TableRow => {
+    const desc = reccer.cartToStr(reportItem.cart);
+    const total = reccer.cartTotal(reportItem.cart)
+    const used = centsToStr(total);
+    const rem = centsToStr(reccer.budget - total);
+    const eff = reportItem.efficiency.toPrecision(3) + "%";
+
+    return [desc, used, rem, eff];
+  });
+  displayMessage(`${xNoun(tableRows.length, "option")} found:`);
+  updateTable(tableRows);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -240,5 +367,5 @@ document.addEventListener("DOMContentLoaded", function () {
   resultsTable = <HTMLTableElement>document.getElementById("results");
   sizeMain();
   window.addEventListener("resize", sizeMain);
-  loadMenu(menu, menuProcessor);
+  loadMenu(menuProcessor);
 });
