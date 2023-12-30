@@ -20,6 +20,10 @@ let errorElt: HTMLSpanElement;
 let messageElt: HTMLSpanElement;
 let resultsTable: HTMLTableElement;
 
+function parseCurrency(s: string): number {
+  return Math.round(parseFloat(s) * 100);
+}
+
 function sizeMain(): void {
   const availableWidth = document.documentElement.clientWidth;
   if (availableWidth < 500) {
@@ -190,11 +194,36 @@ function displayCustomMenuEditor(fieldset: HTMLFieldSetElement): void {
 
   fieldset.replaceChildren(itemsLegend, priceCategoriesLabel, budgetLabel);
 
-  function addNewPriceCategory(): void {
+  function checkDuplicates(): void {
+    const allPriceElts = priceCategoriesLabel.getElementsByClassName(
+      "currencyInput") as HTMLCollectionOf<HTMLInputElement>;
+    Array.prototype.forEach.call(allPriceElts,
+      function (elt: HTMLInputElement) {
+        elt.setCustomValidity("");
+      });
+    for (let i = 0; i < allPriceElts.length; i++) {
+      if (allPriceElts[i].checkValidity()) {
+        const eltPrice = parseCurrency(allPriceElts[i].value);
+        for (let j = i + 1; j < allPriceElts.length; j++) {
+          if (allPriceElts[j].checkValidity()) {
+            const thisEltPrice = parseCurrency(allPriceElts[j].value);
+            if (eltPrice === thisEltPrice) {
+              [allPriceElts[i], allPriceElts[j]].forEach(function (elt) {
+                elt.setCustomValidity("Price categories may not contain duplicates.");
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  addNewPriceButton.addEventListener("click", () => {
     const priceCategoryDiv = document.createElement("div");
     priceCategoryDiv.classList.add("priceCategory");
 
     const priceInput = createCurrencyInput("price");
+    priceInput.addEventListener("input", checkDuplicates);
 
     const minInput = document.createElement("input");
     minInput.type = "number";
@@ -214,9 +243,7 @@ function displayCustomMenuEditor(fieldset: HTMLFieldSetElement): void {
     priceCategoryDiv.replaceChildren(document.createTextNode("$"), priceInput,
       document.createTextNode("\u2003Minimum: "), minInput, removeButton);
     priceCategoriesLabel.insertBefore(priceCategoryDiv, addNewPriceButton);
-  }
-
-  addNewPriceButton.addEventListener("click", addNewPriceCategory);
+  });
 }
 
 function loadMenu(submissionProcessor: (event: SubmitEvent) => void): void {
@@ -295,41 +322,44 @@ function menuProcessor(event: SubmitEvent): void {
 
   const formData = new FormData(menuForm);
   const currentForm = formData.get("menuSelector");
-  if (currentForm === "josItems") {
-    console.log("Jo's Items form used.");
-    prices = [];
-    minimums = [];
-    formData.getAll("item").forEach((item) => {
-      prices.push(parseInt(item as string));
-      minimums.push(parseInt(formData.get(item as string) as string));
-    });
-
-    const numMealSwipes = formData.get("numMealSwipes") as string;
-    budget = parseInt(numMealSwipes) * 1125;
-
-    if (prices.length === 0) {
-      displayError("Please select at least one item.");
-      return;
-    }
-  } else if (currentForm === "customItems") {
-    console.log("Custom items form used.");
-    const pricesRaw = formData.getAll("price") as string[];
-    if (pricesRaw.length === 0) {
-      displayError("Please add at least one price category.");
-      return;
-    }
-    prices = pricesRaw.map(p => Math.round(parseFloat(p) * 100));
-    minimums = formData.getAll("minQuantity").map(m => parseInt(m as string));
-
-    prices.map((p, i) => [p, minimums[i]]).sort((a, b) => a[0] - b[0])
-      .forEach((pair, i) => {
-        prices[i] = pair[0];
-        minimums[i] = pair[1];
+  switch (currentForm) {
+    case "josItems":
+      console.log("Jo's Items form used.");
+      prices = [];
+      minimums = [];
+      formData.getAll("item").forEach((item) => {
+        prices.push(parseInt(item as string));
+        minimums.push(parseInt(formData.get(item as string) as string));
       });
 
-    budget = Math.round(parseFloat(formData.get("budget") as string) * 100);
-  } else {
-    throw new Error("Invalid form selected");
+      const numMealSwipes = formData.get("numMealSwipes") as string;
+      budget = parseInt(numMealSwipes) * 1125;
+
+      if (prices.length === 0) {
+        displayError("Please select at least one item.");
+        return;
+      }
+      break;
+    case "customItems":
+      console.log("Custom items form used.");
+      const pricesRaw = formData.getAll("price") as string[];
+      if (pricesRaw.length === 0) {
+        displayError("Please add at least one price category.");
+        return;
+      }
+      prices = pricesRaw.map(p => parseCurrency(p));
+      minimums = formData.getAll("minQuantity").map(m => parseInt(m as string));
+
+      prices.map((p, i) => [p, minimums[i]]).sort((a, b) => a[0] - b[0])
+        .forEach((pair, i) => {
+          prices[i] = pair[0];
+          minimums[i] = pair[1];
+        });
+
+      budget = parseCurrency(formData.get("budget") as string);
+      break;
+    default:
+      throw new Error("Invalid form selected");
   }
 
   console.log("prices: ", prices);

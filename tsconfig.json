@@ -3,7 +3,7 @@
         "skipLibCheck": true,
         "noImplicitAny": true,
         "target": "ESNext",
-        "lib": ["DOM", "ESNext"]
+        "lib": ["DOM", "DOM.Iterable", "ESNext"]
     },
     "exclude": ["./old_code", "./node_modules"]
 }
